@@ -1,14 +1,14 @@
 <?php
 /*
- * @package create_user_remote
+ * @package create_post_remote
  * @author AllStruck
  * @version 0.1.0
  */
 
 /*
- Plugin Name: Create User Remote
+ Plugin Name: Create Post Remote
  Plugin URI: http://create-user-remote.allstruck.com
- Description: Leverage WebHooks in Wufoo to create new wordpress users with custom field mapping.
+ Description: Leverage WebHooks in Wufoo to create new WordPress posts with custom type, taxonomy and field support with mapping.
  Version: 0.0.1
  Author: AllStruck
  Author URI: http://www.allstruck.com/
@@ -27,7 +27,7 @@
 */
 
 /*
- * @copyright 2012  David Monaghan & AllStruck ( email: wufoo.wp.webhook@allstruck.com  )
+ * @copyright 20213  David Monaghan & AllStruck ( email: wp.webhook@allstruck.com  )
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -60,7 +60,7 @@
 //require_once( dirname( __FILE__ ) . '/controller/initialize.php' );
 
 
-create_user_remote_permalink();
+create_post_remote_permalink();
 	global $debug;
 	global $remoteDebug;
 	
@@ -97,14 +97,14 @@ function debug_say($message, $key = 'General') {
 	}
 }
 			//debug_say("We are going to start up now");
-			global $cruser;
-		  	$cruser = array();
-			$cruser['pfix'] = 'cruser_';
-			$cruser['name_full'] = 'Create User Remote';
-			$cruser['name_slug'] = 'cruser';
+			global $crpost;
+		  	$crpost = array();
+			$crpost['pfix'] = 'crpost_';
+			$crpost['name_full'] = 'Create Post Remote';
+			$crpost['name_slug'] = 'crpost';
 
-			add_option($cruser['pfix'].'setting_new_user_role', '');
-			update_option($cruser['pfix'].'setting_new_user_role', 'subscriber');
+			add_option($crpost['pfix'].'setting_new_user_role', '');
+			update_option($crpost['pfix'].'setting_new_user_role', 'subscriber');
 
 		global $require_user_fields;
 		$standard_user_fields = array(
@@ -129,9 +129,9 @@ function debug_say($message, $key = 'General') {
 		global $all_user_fields;
 		$all_user_fields = array_merge((array)$standard_user_fields);
 		global $current_mappings;
-		$current_mappings = unserialize(get_option($cruser['pfix'].'setting_mapping')); 
+		$current_mappings = unserialize(get_option($crpost['pfix'].'setting_mapping')); 
 		global $all_other_fields;
-		$all_other_fields = explode(',', str_replace(array(' ', "\r\n", "\n", "\r"),'', get_option($cruser['pfix'].'setting_post_type_fields'))); /*array(
+		$all_other_fields = explode(',', str_replace(array(' ', "\r\n", "\n", "\r"),'', get_option($crpost['pfix'].'setting_post_type_fields'))); /*array(
 			'wpcf-shipping-address-street',
 			'wpcf-shipping-address-line-2',
 			'wpcf-shipping-address-city',
@@ -158,25 +158,25 @@ function debug_say($message, $key = 'General') {
 
 
 	function add_admin_settings() {
-			global $cruser;
+			global $crpost;
 		// Handshake setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_handshake', 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_handshake', 
 			'handshake_validate');
 		// Handshake settings section
 		add_settings_section(
-			$cruser['pfix'].'handshake_key_settings_section', 
-			$cruser['name_full'].' Handshake Key', 
+			$crpost['pfix'].'handshake_key_settings_section', 
+			$crpost['name_full'].' Handshake Key', 
 			'handshake_key_settings_section_content', 
 			__FILE__);
 		// Handshake settings key field
 		add_settings_field(
-			$cruser['pfix'].'setting_handshake', 
+			$crpost['pfix'].'setting_handshake', 
 			'Handshake Key', 
 			'setting_handshake_key_content', 
 			__FILE__, 
-			$cruser['pfix'].'handshake_key_settings_section');
+			$crpost['pfix'].'handshake_key_settings_section');
 
 
 
@@ -184,66 +184,66 @@ function debug_say($message, $key = 'General') {
 
 		// Permalink setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_permalink', 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_permalink', 
 			'permalink_validate');
 		// Permalink settings section
 		add_settings_section(
-			$cruser['pfix'].'permalink_settings_section', 
-			$cruser['name_full'].' Permalink', 
+			$crpost['pfix'].'permalink_settings_section', 
+			$crpost['name_full'].' Permalink', 
 			'permalink_settings_section_content', 
 			__FILE__);
 		// Permalink settings key field
 		add_settings_field(
-			$cruser['pfix'].'setting_permalink', 
+			$crpost['pfix'].'setting_permalink', 
 			'Permalink', 
 			'setting_permalink_content', 
 			__FILE__, 
-			$cruser['pfix'].'permalink_settings_section');
+			$crpost['pfix'].'permalink_settings_section');
 		
 		
 		
 		
 		// Extended data post type setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_post_type', 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_post_type', 
 			'post_type_validate');
 		// Post type settings section
 		add_settings_section(
-			$cruser['pfix'].'post_type_settings_section', 
-			$cruser['name_full'].' Post Type', 
+			$crpost['pfix'].'post_type_settings_section', 
+			$crpost['name_full'].' Post Type', 
 			'post_type_settings_section_content', 
 			__FILE__);
 		// Post type settings  field
 		add_settings_field(
-			$cruser['pfix'].'setting_post_type', 
+			$crpost['pfix'].'setting_post_type', 
 			'Post Type', 
 			'setting_post_type_content', 
 			__FILE__, 
-			$cruser['pfix'].'post_type_settings_section');
+			$crpost['pfix'].'post_type_settings_section');
 		
 		
 		
 		
 		// Post type fields setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_post_type_fields', 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_post_type_fields', 
 			'post_type_fields_validate');
 		// Post type fields section
 		add_settings_section(
-			$cruser['pfix'].'post_type_fields_settings_section', 
-			$cruser['name_full'].' Post Tyoe Fields', 
+			$crpost['pfix'].'post_type_fields_settings_section', 
+			$crpost['name_full'].' Post Tyoe Fields', 
 			'post_type_fields_settings_section_content', 
 			__FILE__);
 		// Post type fields settings field
 		add_settings_field(
-			$cruser['pfix'].'setting_post_type_fields', 
+			$crpost['pfix'].'setting_post_type_fields', 
 			'Post Type Fields', 
 			'setting_post_type_fields_content', 
 			__FILE__, 
-			$cruser['pfix'].'post_type_fields_settings_section');
+			$crpost['pfix'].'post_type_fields_settings_section');
 		
 		
 		
@@ -252,22 +252,22 @@ function debug_say($message, $key = 'General') {
 		$setting_slug = 'fields_prefix';
 		// Field prefix setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_'.$setting_slug, 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_'.$setting_slug, 
 			$setting_slug.'_validate');
 		// Field prefix settings section
 		add_settings_section(
-			$cruser['pfix'].$setting_slug.'_settings_section', 
-			$cruser['name_full'].' '.$setting_title, 
+			$crpost['pfix'].$setting_slug.'_settings_section', 
+			$crpost['name_full'].' '.$setting_title, 
 			$setting_slug.'_settings_section_content', 
 			__FILE__);
 		// Field prefix settings key field
 		add_settings_field(
-			$cruser['pfix'].'setting_'.$setting_slug, 
+			$crpost['pfix'].'setting_'.$setting_slug, 
 			$setting_title, 
 			'setting_'. $setting_slug .'_content', 
 			__FILE__, 
-			$cruser['pfix'].$setting_slug.'_settings_section');
+			$crpost['pfix'].$setting_slug.'_settings_section');
 		
 		
 		
@@ -276,22 +276,22 @@ function debug_say($message, $key = 'General') {
 		$setting_slug = 'taxonomy_name';
 		// Field prefix setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_'.$setting_slug, 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_'.$setting_slug, 
 			$setting_slug.'_validate');
 		// Field prefix settings section
 		add_settings_section(
-			$cruser['pfix'].$setting_slug.'_settings_section', 
-			$cruser['name_full'].' '.$setting_title, 
+			$crpost['pfix'].$setting_slug.'_settings_section', 
+			$crpost['name_full'].' '.$setting_title, 
 			$setting_slug.'_settings_section_content', 
 			__FILE__);
 		// Field prefix settings key field
 		add_settings_field(
-			$cruser['pfix'].'setting_'.$setting_slug, 
+			$crpost['pfix'].'setting_'.$setting_slug, 
 			$setting_title, 
 			'setting_'. $setting_slug .'_content', 
 			__FILE__, 
-			$cruser['pfix'].$setting_slug.'_settings_section');
+			$crpost['pfix'].$setting_slug.'_settings_section');
 		
 		
 		
@@ -300,44 +300,44 @@ function debug_say($message, $key = 'General') {
 		$setting_slug = 'taxonomy_terms';
 		// Field prefix setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_'.$setting_slug, 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_'.$setting_slug, 
 			$setting_slug.'_validate');
 		// Field prefix settings section
 		add_settings_section(
-			$cruser['pfix'].$setting_slug.'_settings_section', 
-			$cruser['name_full'].' '.$setting_title, 
+			$crpost['pfix'].$setting_slug.'_settings_section', 
+			$crpost['name_full'].' '.$setting_title, 
 			$setting_slug.'_settings_section_content', 
 			__FILE__);
 		// Field prefix settings key field
 		add_settings_field(
-			$cruser['pfix'].'setting_'.$setting_slug, 
+			$crpost['pfix'].'setting_'.$setting_slug, 
 			$setting_title, 
 			'setting_'. $setting_slug .'_content', 
 			__FILE__, 
-			$cruser['pfix'].$setting_slug.'_settings_section');
+			$crpost['pfix'].$setting_slug.'_settings_section');
 		
 		
 		
 		
 		// Mapping setting
 		register_setting(
-			$cruser['pfix'].'settings', 
-			$cruser['pfix'].'setting_mapping', 
+			$crpost['pfix'].'settings', 
+			$crpost['pfix'].'setting_mapping', 
 			'setting_mapping_validate');
 		// Mapping settings section
 		add_settings_section(
-			$cruser['pfix'].'mapping_settings_section', 
-			$cruser['name_full'].' Mapping', 
+			$crpost['pfix'].'mapping_settings_section', 
+			$crpost['name_full'].' Mapping', 
 			'mapping_settings_section_content', 
 			__FILE__);
 		// Mapping settings key field
 		add_settings_field(
-			$cruser['pfix'].'setting_mapping', 
+			$crpost['pfix'].'setting_mapping', 
 			'Field Mapping', 
 			'setting_mapping_content', 
 			__FILE__, 
-			$cruser['pfix'].'mapping_settings_section');
+			$crpost['pfix'].'mapping_settings_section');
 
 
 
@@ -352,8 +352,8 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter a security key in the box below if you wish to require this handshake sent on form submit.</p>';
 	}
 	function setting_handshake_key_content() {
-			global $cruser;
-		echo '<div><input type="text" name="'.$cruser['pfix'].'setting_handshake" value="' . get_option($cruser['pfix'].'setting_handshake') . '" /></div>';
+			global $crpost;
+		echo '<div><input type="text" name="'.$crpost['pfix'].'setting_handshake" value="' . get_option($crpost['pfix'].'setting_handshake') . '" /></div>';
 	}
 	
 	// Permalink setting functions
@@ -364,8 +364,8 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter a slug in the box below, this is the URI where the WebHook will listen from.</p>';
 	}
 	function setting_permalink_content() {
-			global $cruser;
-		echo '<div><label for="'. $cruser['pfix'].'setting_permalink' .'">'.bloginfo('url').'/</label><input type="text" name="'.$cruser['pfix'].'setting_permalink" value="' . get_option($cruser['pfix'].'setting_permalink') . '" /></div>';
+			global $crpost;
+		echo '<div><label for="'. $crpost['pfix'].'setting_permalink' .'">'.bloginfo('url').'/</label><input type="text" name="'.$crpost['pfix'].'setting_permalink" value="' . get_option($crpost['pfix'].'setting_permalink') . '" /></div>';
 	}
 
 
@@ -378,8 +378,8 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter the slug for the custom post type you want to enter new posts with meta data in.</p>';
 	}
 	function setting_post_type_content() {
-			global $cruser;
-		echo '<div><input type="text" name="'.$cruser['pfix'].'setting_post_type" value="' . get_option($cruser['pfix'].'setting_post_type') . '" /></div>';
+			global $crpost;
+		echo '<div><input type="text" name="'.$crpost['pfix'].'setting_post_type" value="' . get_option($crpost['pfix'].'setting_post_type') . '" /></div>';
 	}
 	// Post type fields setting functions
 	function post_type_fields_validate($input) {
@@ -389,8 +389,8 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter the full field key for each meta field of the post you want to map.</p>';
 	}
 	function setting_post_type_fields_content() {
-			global $cruser;
-		echo '<div><textarea  name="'.$cruser['pfix'].'setting_post_type_fields">' . get_option($cruser['pfix'].'setting_post_type_fields') . '</textarea></div>';
+			global $crpost;
+		echo '<div><textarea  name="'.$crpost['pfix'].'setting_post_type_fields">' . get_option($crpost['pfix'].'setting_post_type_fields') . '</textarea></div>';
 	}
 
 
@@ -403,9 +403,9 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter a slug in the box below, this is the URI where the WebHook will listen from.</p>';
 	}
 	function setting_fields_prefix_content() {
-			global $cruser;
+			global $crpost;
 			$setting_slug = 'fields_prefix';
-		echo '<div><label for="'. $cruser['pfix'].'setting_'. $setting_slug .'">If every form field name has same prefix:</label><input type="text" name="'.$cruser['pfix'].'setting_'. $setting_slug .'" value="' . get_option($cruser['pfix'].'setting_'.$setting_slug) . '" /></div>';
+		echo '<div><label for="'. $crpost['pfix'].'setting_'. $setting_slug .'">If every form field name has same prefix:</label><input type="text" name="'.$crpost['pfix'].'setting_'. $setting_slug .'" value="' . get_option($crpost['pfix'].'setting_'.$setting_slug) . '" /></div>';
 	}
 
 
@@ -418,9 +418,9 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter a taxonomy name to fill with the terms from the terms list.</p>';
 	}
 	function setting_taxonomy_name_content() {
-			global $cruser;
+			global $crpost;
 			$setting_slug = 'taxonomy_name';
-		echo '<div><label for="'. $cruser['pfix'].'setting_'. $setting_slug .'">Lowercase slug</label><input type="text" name="'.$cruser['pfix'].'setting_'. $setting_slug .'" value="' . get_option($cruser['pfix'].'setting_'.$setting_slug) . '" /></div>';
+		echo '<div><label for="'. $crpost['pfix'].'setting_'. $setting_slug .'">Lowercase slug</label><input type="text" name="'.$crpost['pfix'].'setting_'. $setting_slug .'" value="' . get_option($crpost['pfix'].'setting_'.$setting_slug) . '" /></div>';
 	}
 
 
@@ -433,16 +433,16 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Enter a list of taxonomy terms to fill the taxonomy with.</p>';
 	}
 	function setting_taxonomy_terms_content() {
-			global $cruser;
+			global $crpost;
 			$setting_slug = 'taxonomy_terms';
-		echo '<div><label for="'. $cruser['pfix'].'setting_'. $setting_slug .'">Lowercase slugs or IDs separated by commas</label><input type="text" name="'.$cruser['pfix'].'setting_'. $setting_slug .'" value="' . get_option($cruser['pfix'].'setting_'.$setting_slug) . '" /></div>';
+		echo '<div><label for="'. $crpost['pfix'].'setting_'. $setting_slug .'">Lowercase slugs or IDs separated by commas</label><input type="text" name="'.$crpost['pfix'].'setting_'. $setting_slug .'" value="' . get_option($crpost['pfix'].'setting_'.$setting_slug) . '" /></div>';
 	}
 
 
 
 	// Mapping setting functions
 	function setting_mapping_validate($input) {
-		global $cruser;
+		global $crpost;
 		global $all_user_fields;
 		global $all_other_fields;
 		
@@ -460,7 +460,7 @@ function debug_say($message, $key = 'General') {
 		echo '<p>Map the WP user fields to each incoming form field in the table below.</p>';
 	}
 	function setting_mapping_content() {
-		global $cruser;
+		global $crpost;
 		global $all_user_fields;		
 		global $current_mappings;
 		global $all_other_fields;
@@ -491,19 +491,19 @@ function debug_say($message, $key = 'General') {
 	
 	
 	function add_new_users_submenu() {
-		global $cruser;
-		add_submenu_page('users.php', $cruser['name_full'], $cruser['name_full'], 'delete_users', $cruser['name_slug'], 'plugin_settings_page_content');
+		global $crpost;
+		add_submenu_page('users.php', $crpost['name_full'], $crpost['name_full'], 'delete_users', $crpost['name_slug'], 'plugin_settings_page_content');
 	}
 	
 	function plugin_settings_page_content() {
-			global $cruser;
-		echo '<h1>'. $cruser['name_full'] .'</h1>';
+			global $crpost;
+		echo '<h1>'. $crpost['name_full'] .'</h1>';
 		
-		$settings_page_uri = 'options.php?redirect_to=/wp-admin/users.php?page=cruser';
+		$settings_page_uri = 'options.php?redirect_to=/wp-admin/users.php?page=crpost';
 		
 		?>
 			<form action="<?php echo $settings_page_uri ?>" method="post">
-				<?php settings_fields($cruser['pfix'].'settings'); ?>
+				<?php settings_fields($crpost['pfix'].'settings'); ?>
 				<?php do_settings_sections(__FILE__); ?>
 				<div class="submit"><input name="Submit" class="primary-button" type="submit" value="<?php esc_attr_e('Save Changes');?>" /></div>
 			</form>
@@ -512,15 +512,15 @@ function debug_say($message, $key = 'General') {
 	}
 	
 	// Override permalink given in settings.
-	function create_user_remote_permalink() {		
+	function create_post_remote_permalink() {		
 		
 		register_activation_hook( __FILE__, 'rewrite_activate'  );
 		register_deactivation_hook( __FILE__, 'rewrite_deactivate'  );
 		add_action( 'init', 'create_rewrite_for_new_user' );
 	}
 	function create_rewrite_for_new_user() {
-		global $cruser;
-		add_rewrite_rule(get_option($cruser['pfix'].'setting_permalink') . '/?$', 
+		global $crpost;
+		add_rewrite_rule(get_option($crpost['pfix'].'setting_permalink') . '/?$', 
 		str_replace( 
     		home_url(), 
     		"", 
