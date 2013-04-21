@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Create User Remote by AllStruck</title>
+    <title>Create Post Remote by AllStruck</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
     <link rel="stylesheet" href="stylesheets/pygment_trac.css">
@@ -15,35 +15,31 @@
   <body>
     <div class="wrapper">
       <header>
-        <h1>Create User Remote</h1>
-        <p>A WordPress plugin making it possible to create new users from incoming form data. This plugin adds extra information to a custom post type set in the configuration.</p>
-        <p class="view"><a href="https://github.com/AllStruck/create-user-remote">View the Project on GitHub <small>AllStruck/create-user-remote</small></a></p>
+        <h1>Create Post Remote</h1>
+        <p>A WordPress plugin making it possible to create new posts from incoming form data, with custom post type, taxonomy, and meta field support.</p>
+        <p class="view"><a href="https://github.com/AllStruck/create-post-remote">View the Project on GitHub <small>AllStruck/create-post-remote</small></a></p>
         <ul>
-          <li><a href="https://github.com/AllStruck/create-user-remote/zipball/master">Download <strong>ZIP File</strong></a></li>
-          <li><a href="https://github.com/AllStruck/create-user-remote/tarball/master">Download <strong>TAR Ball</strong></a></li>
-          <li><a href="https://github.com/AllStruck/create-user-remote">View On <strong>GitHub</strong></a></li>
+          <li><a href="https://github.com/AllStruck/create-post-remote/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/AllStruck/create-post-remote/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/AllStruck/create-post-remote">View On <strong>GitHub</strong></a></li>
         </ul>
       </header>
       <section>
         <h3>How does this work?</h3>
 
-<p>After activating this plugin on your WordPress installation, a new administration menu is added under Users > Create User Remote where you must set up several options to get started.</p>
+<p>After activating this plugin on your WordPress installation, a new administration menu is added under Users > Create Post Remote where you must set up several options to get started.</p>
 
 <p>Before getting started, you should know this plugin was created with the intention of storing additional user information passed during form entry into a custom post type with custom fields, and can also add one or more terms to one specified taxonomy.</p>
 
-<h3>The User</h3>
+<h3>The Post</h3>
 
-<p>This plugin will create actual WordPress users, like you would from the backend, however this plugin allows you to automate this process from any outside web form or with any service which can send out WebHooks...</p>
+<p>This plugin will create actual WordPress posts, like you would from the backend, however this plugin allows you to automate this process from any outside web form or with any service which can send out WebHooks...</p>
 
 <h3>How do I set it up?</h3>
 
-<p>This plugin requires many settings to start working, once you hopefully have a custom post type already set up (e.g. Accounts) you then need to provide a unique URL string where the form action field or WebHook will be sent to. Then you can provide a key value for validating the incoming request. Additionally you need to provide the custom post type slug, a list of all custom field to be mapped, the slug for one taxonomy to add to, and the slugs of the terms to add for every entry. You may optionally provide a prefix to put in front of every incoming field name for convenience...</p>
+<p>This plugin requires many settings to start working, once you hopefully have a custom post type already set up (e.g. Stars) you then need to provide a unique URL string where the form action field or WebHook will be sent to. Then you can provide a key value for validating the incoming request. Additionally you need to provide the custom post type slug, a list of all custom fields to be mapped, the slug for one taxonomy to add to, and the slugs of the terms to add for every entry. You may optionally provide a prefix to put in front of every incoming field name for convenience...</p>
 
 <p>You will need to save these settings at this point before continuing, your entry for the custom fields list will be used to generate the mapping form, This mapping form will require that you provide the corresponding name for each field you wish to be saved upon incoming request.</p>
-
-<h3>Security</h3>
-
-<p>Use this plugin at your own risk. Using a URI and KEY which are kept secret and are sufficiently random are recommended. It is NOT recommended that you supply a password using your query, this plugin will generate a random password to the user and it is recommended that you institute a secure password exchange system in addition to this.</p>
 
 <script type="text/javascript">
 
